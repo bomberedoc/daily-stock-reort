@@ -1,0 +1,76 @@
+# Mailgun Stock Report
+
+This project fetches the previous trading day's closing prices for a list of tickers (AAPL, MA, WDC) using `yfinance` and sends a report via Mailgun.
+
+## Usage
+
+1. **Dependencies:**
+   ```sh
+   pip install -r requirements.txt
+   ```
+   The `requirements.txt` file should contain:
+   ```txt
+   requests
+   yfinance
+   schedule  # only needed for daemon mode
+   ```
+
+2. **Run once:**
+   ```sh
+   python send_email.py
+   ```
+   This prints the report and sends the email immediately.
+
+3. **Run daily at 10:00 AM IST:**
+   ```sh
+   python send_email.py --daemon
+   ```
+   The script will continue running, dispatching the report every day at 10:00 India Standard Time. Make sure your machine's local timezone is set to IST, or adjust the scheduling logic accordingly.
+
+4. **Alternatively (Windows Task Scheduler)**
+   You can schedule the script using Task Scheduler instead of `--daemon` mode. Create a task that runs:
+   ```sh
+   python "D:\Documents\Python Projects\Mailgun\send_email.py"
+   ```
+   daily at 04:30 UTC (10:00 IST).
+
+## GitHub Repository
+
+To push this code to GitHub:
+
+1. Create a new repository on GitHub (e.g. `Mailgun-stock-report`).
+2. In this local directory run:
+   ```sh
+   git remote add origin https://github.com/<your-username>/Mailgun-stock-report.git
+   git push -u origin master
+   ```
+
+Alternatively, install the GitHub CLI (`gh`) and run:
+```sh
+gh repo create Mailgun-stock-report --public --source=. --remote=origin --push
+```
+
+## Environment
+
+- Python 3.11+
+- Windows (tested) but should work on macOS/Linux
+
+Configuration is now read from environment variables, with support for a `.env` file (ignored by git).
+
+Create a `.env` in the project root containing:
+```ini
+API_KEY=your-mailgun-api-key
+MAILGUN_DOMAIN=your-domain.mailgun.org
+MAILGUN_FROM="You <you@example.com>"
+MAILGUN_TO="Your Name <your.email@example.com>"
+```
+
+Alternatively you can still set the variables in your shell:
+```sh
+export API_KEY="your-key-here"    # Unix-like
+setx API_KEY "your-key-here"      # Windows
+```
+
+---
+
+Feel free to expand tickers or formatting as needed.
