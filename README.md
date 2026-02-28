@@ -73,4 +73,31 @@ setx API_KEY "your-key-here"      # Windows
 
 ---
 
+## GitHub Actions (automated daily email)
+
+This repository includes a GitHub Actions workflow at `.github/workflows/daily_report.yml` that runs daily at 10:00 AM IST (04:30 UTC). The workflow expects the following repository secrets to be set:
+
+- `API_KEY` — your Mailgun API key
+- `MAILGUN_DOMAIN` — your Mailgun domain
+- `MAILGUN_FROM` — email sender (e.g. "You <you@example.com>")
+- `MAILGUN_TO` — recipient (e.g. "Your Name <your.email@example.com>")
+
+Set the secrets in the repository settings (Settings → Secrets and variables → Actions) or via the GitHub CLI:
+
+```powershell
+# example (interactive) using gh:
+gh secret set API_KEY --body "<your-key>"
+gh secret set MAILGUN_DOMAIN --body "your-domain.mailgun.org"
+gh secret set MAILGUN_FROM --body "You <you@example.com>"
+gh secret set MAILGUN_TO --body "Your Name <your.email@example.com>"
+```
+
+You can manually trigger the workflow from the Actions tab or run:
+
+```powershell
+gh workflow run daily_report.yml
+```
+
+The workflow installs Python, installs dependencies from `requirements.txt`, and runs `python send_email.py`.
+
 Feel free to expand tickers or formatting as needed.
