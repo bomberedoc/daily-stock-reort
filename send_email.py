@@ -5,6 +5,12 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import yfinance as yf
 
+# optional WhatsApp/Twilio support
+try:
+    from twilio.rest import Client
+except ImportError:
+    Client = None
+
 # load environment file if present
 load_dotenv()
 
@@ -14,8 +20,18 @@ MAILGUN_DOMAIN = os.getenv("MAILGUN_DOMAIN")
 MAILGUN_FROM = os.getenv("MAILGUN_FROM")
 MAILGUN_TO = os.getenv("MAILGUN_TO")
 
+# Twilio/WhatsApp settings (optional)
+TWILIO_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+WHATSAPP_FROM = os.getenv("WHATSAPP_FROM")  # e.g. "whatsapp:+14155238886"
+WHATSAPP_TO = os.getenv("WHATSAPP_TO")      # e.g. "whatsapp:+1234567890"
+
 if not API_KEY or not MAILGUN_DOMAIN or not MAILGUN_FROM or not MAILGUN_TO:
     raise RuntimeError("Please set API_KEY, MAILGUN_DOMAIN, MAILGUN_FROM, and MAILGUN_TO in the environment or .env file")
+
+# if WhatsApp variables are present, ensure Twilio client is available
+if (TWILIO_SID or TWILIO_TOKEN or WHATSAPP_FROM or WHATSAPP_TO) and Client is None:
+    raise RuntimeError("Twilio client is required for WhatsApp messaging; install the 'twilio' package")
 
 
 def fetch_stock_report(tickers):
@@ -56,14 +72,34 @@ def send_simple_message(subject: str, text: str):
     )
 
 
+def send_whatsapp_message(text: str):
+    """Send a WhatsApp message via Twilio if configured."""
+    if not all([TWILIO_SID, TWILIO_TOKEN, WHATSAPP_FROM, WHATSAPP_TO]):
+        raise RuntimeError("WhatsApp configuration incomplete")
+    client = Client(TWILIO_SID, TWILIO_TOKEN)
+    message = client.messages.create(
+        body=text,
+        from_=WHATSAPP_FROM,
+        to=WHATSAPP_TO,
+    )
+    return message
+
+
 def main():
     tickers = ["AAPL", "MA", "WDC"]
     text = fetch_stock_report(tickers)
     subj = f"Stock movement report for {datetime.now().date() - timedelta(days=1)}"
     print("Report text:\n", text)
+
+    # send via email
     response = send_simple_message(subj, text)
     print("Mailgun response status", response.status_code)
     print(response.text)
+
+    # optionally send via WhatsApp
+    if all([TWILIO_SID, TWILIO_TOKEN, WHATSAPP_FROM, WHATSAPP_TO]):
+        msg = send_whatsapp_message(text)
+        print("WhatsApp message sid", getattr(msg, 'sid', '<unknown>'))
 
 
 if __name__ == "__main__":

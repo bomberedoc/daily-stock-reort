@@ -98,6 +98,18 @@ You can manually trigger the workflow from the Actions tab or run:
 gh workflow run daily_report.yml
 ```
 
+### WhatsApp support
+
+If you'd like to receive the same report via WhatsApp instead of or in addition to email, the script now integrates with Twilio's WhatsApp API. Set the following additional environment variables or repository secrets:
+
+- `TWILIO_ACCOUNT_SID`
+- `TWILIO_AUTH_TOKEN`
+- `WHATSAPP_FROM` – the Twilio WhatsApp-enabled number, e.g. `whatsapp:+14155238886`
+- `WHATSAPP_TO` – your personal WhatsApp number, e.g. `whatsapp:+1234567890`
+
+With those configured the workflow will send messages automatically each run.
+
+
 The workflow installs Python, installs dependencies from `requirements.txt`, and runs `python send_email.py`.
 
 Feel free to expand tickers or formatting as needed.
