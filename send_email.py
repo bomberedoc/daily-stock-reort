@@ -98,8 +98,12 @@ def main():
 
     # optionally send via WhatsApp
     if all([TWILIO_SID, TWILIO_TOKEN, WHATSAPP_FROM, WHATSAPP_TO]):
-        msg = send_whatsapp_message(text)
-        print("WhatsApp message sid", getattr(msg, 'sid', '<unknown>'))
+        try:
+            msg = send_whatsapp_message(text)
+            print("WhatsApp message sid", getattr(msg, 'sid', '<unknown>'))
+        except Exception as e:
+            # log the error but do not fail the entire run — email already sent
+            print("WhatsApp send failed:", repr(e))
 
 
 if __name__ == "__main__":
