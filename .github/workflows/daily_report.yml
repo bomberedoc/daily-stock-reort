@@ -14,6 +14,11 @@ jobs:
       MAILGUN_DOMAIN: ${{ secrets.MAILGUN_DOMAIN }}
       MAILGUN_FROM: ${{ secrets.MAILGUN_FROM }}
       MAILGUN_TO: ${{ secrets.MAILGUN_TO }}
+      # Optional Twilio/WhatsApp secrets (set these if you want WhatsApp delivery)
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+      WHATSAPP_FROM: ${{ secrets.WHATSAPP_FROM }}
+      WHATSAPP_TO: ${{ secrets.WHATSAPP_TO }}
     steps:
       - uses: actions/checkout@v4
 
